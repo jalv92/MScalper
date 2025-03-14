@@ -11,7 +11,7 @@ using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
 using NinjaTrader.NinjaScript;
 
-namespace OrderFlowScalper.Indicators
+namespace MScalper.Indicators
 {
     [Description("Analyzes Time & Sales data to identify buying/selling pressure and aggressive trades")]
     public class TimeAndSalesAnalyzerIndicator : NinjaTrader.NinjaScript.Indicators.Indicator

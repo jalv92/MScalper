@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using Newtonsoft.Json;
+using MScalper.Utilities;
 
-namespace OrderFlowScalper.Core
+namespace MScalper.Core
 {
     /// <summary>
     /// Core algorithm logic for order flow-based micro-scalping strategy
@@ -24,6 +25,11 @@ namespace OrderFlowScalper.Core
         private readonly string _algorithmVersion = "1.0.0";
         private bool _isInitialized;
         private readonly object _lockObject = new object();
+
+        // Campos para licencia
+        private bool _isLicenseValid = false;
+        private DateTime _lastLicenseCheck = DateTime.MinValue;
+        private readonly TimeSpan _licenseCheckInterval = TimeSpan.FromHours(1);
         #endregion
 
         #region Public Properties
@@ -166,6 +172,14 @@ namespace OrderFlowScalper.Core
         {
             try
             {
+                // Verificar licencia primero
+                if (!VerifyLicense())
+                {
+                    LogMessage("Licencia no válida o expirada. Por favor contacta a Javier Lora email: jvlora@hublai.com", LogLevel.Error);
+                    State = AlgorithmState.Error;
+                    return false;
+                }
+                
                 // Load configuration
                 if (!LoadConfiguration())
                     return false;
@@ -255,6 +269,14 @@ namespace OrderFlowScalper.Core
             if (!_isInitialized)
             {
                 LogMessage("Cannot start: Algorithm not initialized", LogLevel.Error);
+                return false;
+            }
+            
+            // Verificar licencia antes de iniciar
+            if (!VerifyLicense())
+            {
+                LogMessage("Cannot start: License is not valid", LogLevel.Error);
+                State = AlgorithmState.Error;
                 return false;
             }
             
@@ -451,6 +473,16 @@ namespace OrderFlowScalper.Core
             if (State != AlgorithmState.Running || _currentTradingMode == TradingMode.Disabled || 
                 _currentTradingMode == TradingMode.MonitorOnly)
                 return false;
+            
+            // Verificar licencia periódicamente
+            if ((DateTime.Now - _lastLicenseCheck) > _licenseCheckInterval)
+            {
+                if (!VerifyLicense())
+                {
+                    LogMessage("Signal rejected: License validation failed", LogLevel.Warning);
+                    return false;
+                }
+            }
                 
             try
             {
@@ -643,7 +675,54 @@ namespace OrderFlowScalper.Core
         }
         #endregion
 
-        #region Helper Methods
+        #region License Verification
+        /// <summary>
+        /// Verifies that the license is valid
+        /// </summary>
+        /// <returns>True if license is valid</returns>
+        private bool VerifyLicense()
+        {
+            try
+            {
+                // Solo verificar la licencia a intervalos regulares después de la primera vez
+                if (_isLicenseValid && (DateTime.Now - _lastLicenseCheck) < _licenseCheckInterval)
+                    return true;
+                
+                // Inicializar y verificar licencia
+                var licenseManager = LicenseManager.Instance;
+                bool initialized = licenseManager.Initialize();
+                _isLicenseValid = initialized && licenseManager.IsLicenseValid();
+                _lastLicenseCheck = DateTime.Now;
+                
+                if (_isLicenseValid)
+                {
+                    // Verificar si la licencia está a punto de expirar (menos de 3 días)
+                    int remainingDays = licenseManager.GetRemainingDays();
+                    if (remainingDays >= 0 && remainingDays <= 3)
+                    {
+                        LogMessage($"ADVERTENCIA: Su licencia expira en {remainingDays} días. Por favor contacta a Javier Lora email: jvlora@hublai.com", LogLevel.Warning);
+                    }
+                    
+                    // Registrar información de la licencia
+                    var licenseType = licenseManager.GetLicenseType();
+                    LogMessage($"Licencia válida. Tipo: {licenseType}, Expira: {licenseManager.GetExpirationDate():yyyy-MM-dd}", LogLevel.Info);
+                }
+                else
+                {
+                    LogMessage("Licencia no válida o expirada. Por favor contacta a Javier Lora email: jvlora@hublai.com", LogLevel.Warning);
+                }
+                
+                return _isLicenseValid;
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Error verificando licencia: {ex.Message}", LogLevel.Error);
+                return false;
+            }
+        }
+        #endregion
+
+        #region Order Flow Analysis Methods
         /// <summary>
         /// Analyzes order book to detect imbalances
         /// </summary>
@@ -891,7 +970,9 @@ namespace OrderFlowScalper.Core
                 }
             }
         }
+        #endregion
 
+        #region Helper Methods
         /// <summary>
         /// Calculate trend slope from price series
         /// </summary>

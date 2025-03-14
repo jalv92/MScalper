@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Media;
 using NinjaTrader.Cbi;
 using NinjaTrader.Core;
@@ -15,11 +16,12 @@ using NinjaTrader.Data;
 using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.DrawingTools;
 using NinjaTrader.NinjaScript.Indicators;
+using MScalper.Utilities;
 
-namespace OrderFlowScalper.Strategy
+namespace MScalper.Strategy
 {
     [Description("Strategy for micro-scalping based on order flow analysis")]
-    public class OrderFlowScalperStrategy : NinjaTrader.NinjaScript.Strategies.Strategy
+    public class MScalperStrategy : NinjaTrader.NinjaScript.Strategies.Strategy
     {
         #region Variables
         private MarketAnalysis marketAnalysis;
@@ -31,6 +33,14 @@ namespace OrderFlowScalper.Strategy
         private List<double> recentImbalances = new List<double>();
         private const int MaxImbalanceHistory = 20;
         private double currentImbalance = 0;
+
+        #region Variables de Licencia
+        private bool isLicenseValid = false;
+        private DateTime lastLicenseCheck = DateTime.MinValue;
+        private TimeSpan licenseCheckInterval = TimeSpan.FromHours(1);
+        private string licenseMessage = string.Empty;
+        private bool showedLicenseWarning = false;
+        #endregion
         #endregion
 
         #region Parameters
@@ -126,6 +136,13 @@ namespace OrderFlowScalper.Strategy
                 deltaVolume.Clear();
                 cumulativeDelta = 0;
                 recentImbalances.Clear();
+                
+                // Verificar licencia
+                VerifyLicense();
+            }
+            else if (State == State.Terminated)
+            {
+                // Limpiar recursos cuando se termina la estrategia
             }
         }
 
@@ -167,6 +184,71 @@ namespace OrderFlowScalper.Strategy
             }
         }
 
+        protected override void OnBarUpdate()
+        {
+            // Verificar licencia periódicamente durante la ejecución
+            if ((DateTime.Now - lastLicenseCheck) > licenseCheckInterval)
+            {
+                if (!VerifyLicense())
+                {
+                    // Si la licencia no es válida, permitir funcionalidad limitada
+                    // Por ejemplo, solo mostrar información pero no ejecutar operaciones
+                }
+            }
+            
+            // Not using bar updates for this strategy as it's based on order flow
+            // But we can use it for session management
+            if (BarsInProgress != 0) 
+                return;
+                
+            // Check for session boundaries
+            if (ToTime(Time[0]) < ToTime(StartTime) || ToTime(Time[0]) > ToTime(EndTime))
+            {
+                // Outside trading hours, flatten position if any
+                if (Position.MarketPosition != MarketPosition.Flat)
+                {
+                    if (EnableDebugLogging)
+                        Log("Session end - flattening position");
+                        
+                    Flatten();
+                }
+            }
+        }
+
+        protected override void OnExecutionUpdate(Execution execution, string executionId, 
+            double price, int quantity, MarketPosition marketPosition, string orderId, DateTime time)
+        {
+            // Handle execution updates
+            if (Position.MarketPosition != MarketPosition.Flat)
+            {
+                double stopPrice = 0;
+                double targetPrice = 0;
+                
+                if (Position.MarketPosition == MarketPosition.Long)
+                {
+                    stopPrice = Position.AveragePrice - (StopLossTicks * TickSize);
+                    targetPrice = Position.AveragePrice + (ProfitTargetTicks * TickSize);
+                    
+                    ExitLongStopMarket(0, true, Position.Quantity, stopPrice, "Stop Loss", "StopLoss");
+                    ExitLongLimit(0, true, Position.Quantity, targetPrice, "Profit Target", "ProfitTarget");
+                }
+                else if (Position.MarketPosition == MarketPosition.Short)
+                {
+                    stopPrice = Position.AveragePrice + (StopLossTicks * TickSize);
+                    targetPrice = Position.AveragePrice - (ProfitTargetTicks * TickSize);
+                    
+                    ExitShortStopMarket(0, true, Position.Quantity, stopPrice, "Stop Loss", "StopLoss");
+                    ExitShortLimit(0, true, Position.Quantity, targetPrice, "Profit Target", "ProfitTarget");
+                }
+                
+                if (EnableDebugLogging)
+                {
+                    Log(string.Format("Position: {0} at {1} - Stop: {2} Target: {3}", 
+                        Position.MarketPosition, Position.AveragePrice, stopPrice, targetPrice));
+                }
+            }
+        }
+        
         private void ProcessTrade(double price, long volume, DateTime time)
         {
             // Determine if trade was buyer or seller initiated
@@ -289,61 +371,139 @@ namespace OrderFlowScalper.Strategy
             }
         }
 
-        protected override void OnExecutionUpdate(Execution execution, string executionId, 
-            double price, int quantity, MarketPosition marketPosition, string orderId, DateTime time)
+        #region Métodos sobrescritos para verificación de licencia
+        private new void EnterLong()
         {
-            // Handle execution updates
-            if (Position.MarketPosition != MarketPosition.Flat)
+            // Verificar licencia antes de ejecutar operación
+            if (!isLicenseValid && !VerifyLicense())
             {
-                double stopPrice = 0;
-                double targetPrice = 0;
-                
-                if (Position.MarketPosition == MarketPosition.Long)
-                {
-                    stopPrice = Position.AveragePrice - (StopLossTicks * TickSize);
-                    targetPrice = Position.AveragePrice + (ProfitTargetTicks * TickSize);
-                    
-                    ExitLongStopMarket(0, true, Position.Quantity, stopPrice, "Stop Loss", "StopLoss");
-                    ExitLongLimit(0, true, Position.Quantity, targetPrice, "Profit Target", "ProfitTarget");
-                }
-                else if (Position.MarketPosition == MarketPosition.Short)
-                {
-                    stopPrice = Position.AveragePrice + (StopLossTicks * TickSize);
-                    targetPrice = Position.AveragePrice - (ProfitTargetTicks * TickSize);
-                    
-                    ExitShortStopMarket(0, true, Position.Quantity, stopPrice, "Stop Loss", "StopLoss");
-                    ExitShortLimit(0, true, Position.Quantity, targetPrice, "Profit Target", "ProfitTarget");
-                }
-                
                 if (EnableDebugLogging)
+                    Log("Operación rechazada: Licencia no válida");
+                return;
+            }
+            
+            // Ejecutar entrada original
+            base.EnterLong();
+        }
+
+        private new void EnterShort()
+        {
+            // Verificar licencia antes de ejecutar operación
+            if (!isLicenseValid && !VerifyLicense())
+            {
+                if (EnableDebugLogging)
+                    Log("Operación rechazada: Licencia no válida");
+                return;
+            }
+            
+            // Ejecutar entrada original
+            base.EnterShort();
+        }
+        #endregion
+
+        #region Métodos de Licencia
+        /// <summary>
+        /// Verifica que la licencia sea válida
+        /// </summary>
+        /// <returns>True si la licencia es válida</returns>
+        private bool VerifyLicense()
+        {
+            try
+            {
+                // Solo verificar la licencia periódicamente después de la primera verificación
+                if (isLicenseValid && (DateTime.Now - lastLicenseCheck) < licenseCheckInterval)
+                    return true;
+                
+                // Inicializar y verificar licencia
+                var licenseManager = LicenseManager.Instance;
+                bool initialized = licenseManager.Initialize();
+                isLicenseValid = initialized && licenseManager.IsLicenseValid();
+                lastLicenseCheck = DateTime.Now;
+                
+                if (isLicenseValid)
                 {
-                    Log(string.Format("Position: {0} at {1} - Stop: {2} Target: {3}", 
-                        Position.MarketPosition, Position.AveragePrice, stopPrice, targetPrice));
+                    // Verificar si la licencia está a punto de expirar (menos de 3 días)
+                    int remainingDays = licenseManager.GetRemainingDays();
+                    if (remainingDays >= 0 && remainingDays <= 3)
+                    {
+                        licenseMessage = $"ADVERTENCIA: Su periodo de prueba expira en {remainingDays} días. Por favor contacta a Javier Lora email: jvlora@hublai.com";
+                        if (!showedLicenseWarning)
+                        {
+                            // Mostrar advertencia en UI de NinjaTrader (solo una vez)
+                            ShowLicenseWarning(licenseMessage);
+                            showedLicenseWarning = true;
+                        }
+                        if (EnableDebugLogging)
+                            Log(licenseMessage);
+                    }
+                    else if (licenseManager.GetLicenseType() == LicenseManager.LicenseType.Trial)
+                    {
+                        licenseMessage = $"Versión de prueba activa. Días restantes: {remainingDays}";
+                        if (EnableDebugLogging)
+                            Log(licenseMessage);
+                    }
                 }
+                else
+                {
+                    licenseMessage = "Licencia no válida o expirada. Por favor contacta a Javier Lora email: jvlora@hublai.com";
+                    ShowLicenseError(licenseMessage);
+                    Log(licenseMessage);
+                }
+                
+                return isLicenseValid;
+            }
+            catch (Exception ex)
+            {
+                Log($"Error verificando licencia: {ex.Message}");
+                return false;
             }
         }
 
-        protected override void OnBarUpdate()
+        /// <summary>
+        /// Muestra un mensaje de advertencia de licencia en la UI de NinjaTrader
+        /// </summary>
+        /// <param name="message">Mensaje de advertencia</param>
+        private void ShowLicenseWarning(string message)
         {
-            // Not using bar updates for this strategy as it's based on order flow
-            // But we can use it for session management
-            if (BarsInProgress != 0) 
-                return;
-                
-            // Check for session boundaries
-            if (ToTime(Time[0]) < ToTime(StartTime) || ToTime(Time[0]) > ToTime(EndTime))
+            try
             {
-                // Outside trading hours, flatten position if any
-                if (Position.MarketPosition != MarketPosition.Flat)
-                {
-                    if (EnableDebugLogging)
-                        Log("Session end - flattening position");
-                        
-                    Flatten();
-                }
+                // NinjaTrader puede ejecutar esto en un hilo no UI, por lo que debemos asegurarnos
+                // de mostrar el mensaje en el hilo UI
+                NinjaTrader.Gui.Tools.NTMessageBoxSimple.Show(
+                    NinjaTrader.Core.Globals.MainWindow,
+                    message,
+                    "OrderFlowScalper - Advertencia de Licencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error mostrando advertencia de licencia: {ex.Message}");
             }
         }
-        
+
+        /// <summary>
+        /// Muestra un mensaje de error de licencia en la UI de NinjaTrader
+        /// </summary>
+        /// <param name="message">Mensaje de error</param>
+        private void ShowLicenseError(string message)
+        {
+            try
+            {
+                NinjaTrader.Gui.Tools.NTMessageBoxSimple.Show(
+                    NinjaTrader.Core.Globals.MainWindow,
+                    message,
+                    "OrderFlowScalper - Error de Licencia",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error mostrando error de licencia: {ex.Message}");
+            }
+        }
+        #endregion
+
         #region Helper Methods
         private double GetCurrentBid()
         {

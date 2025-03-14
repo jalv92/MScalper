@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OrderFlowScalper.Utilities
+namespace MScalper.Utilities
 {
     /// <summary>
     /// Centralized logging system for the trading application

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OrderFlowScalper.Core
+namespace MScalper.Core
 {
     /// <summary>
     /// Manages risk parameters and position sizing for the trading strategy

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OrderFlowScalper.Utilities
+namespace MScalper.Utilities
 {
     /// <summary>
     /// Manages configuration settings for the trading system

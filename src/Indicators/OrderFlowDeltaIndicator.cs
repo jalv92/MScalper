@@ -11,7 +11,7 @@ using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
 using NinjaTrader.NinjaScript;
 
-namespace OrderFlowScalper.Indicators
+namespace MScalper.Indicators
 {
     [Description("Visualizes the cumulative delta volume to identify buying/selling pressure")]
     public class OrderFlowDeltaIndicator : NinjaTrader.NinjaScript.Indicators.Indicator

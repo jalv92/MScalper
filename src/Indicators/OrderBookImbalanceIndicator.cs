@@ -11,7 +11,7 @@ using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
 using NinjaTrader.NinjaScript;
 
-namespace OrderFlowScalper.Indicators
+namespace MScalper.Indicators
 {
     [Description("Visualizes order book imbalances to identify potential market pressure points")]
     public class OrderBookImbalanceIndicator : NinjaTrader.NinjaScript.Indicators.Indicator

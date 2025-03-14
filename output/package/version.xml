@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<MScalper>
+  <Version>0.8.3-beta</Version>
+  <TargetNTVersion>8.1.4.1</TargetNTVersion>
+  <BuildDate>2025-03-13 22:28:40</BuildDate>
+  <Package>
+    <Name>MScalper</Name>
+    <Description>MScalper Order Flow Trading Strategy</Description>
+    <Author>Javier Lora</Author>
+    <Contact>jvlora@hublai.com</Contact>
+  </Package>
+</MScalper>

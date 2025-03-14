@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NinjaTrader.Core">
+      <HintPath>C:\Users\javlo\Documents\Code Projects\MScalper\build/../src/References\NinjaTrader.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NinjaTrader.Client">
+      <HintPath>C:\Users\javlo\Documents\Code Projects\MScalper\build/../src/References\NinjaTrader.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="WindowsBase" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+</Project>

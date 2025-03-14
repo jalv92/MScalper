@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OrderFlowScalper.Core
+namespace MScalper.Core
 {
     /// <summary>
     /// Processes, filters, and validates trading signals based on order flow analysis

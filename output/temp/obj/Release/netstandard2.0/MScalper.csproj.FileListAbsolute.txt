@@ -1,0 +1,6 @@
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.csproj.AssemblyReference.cache
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.AssemblyInfoInputs.cache
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.AssemblyInfo.cs
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.csproj.CoreCompileInputs.cache
+C:\Users\javlo\Documents\Code Projects\MScalper\output\temp\obj\Release\netstandard2.0\MScalper.sourcelink.json
