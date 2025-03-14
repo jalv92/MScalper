@@ -208,6 +208,18 @@ Si el método anterior no funciona, puede importar los archivos manualmente:
 5. Navegue hasta la carpeta Source/[Categoría] correspondiente y seleccione los archivos .cs
 6. Compile la solución
 
+## Método 3: Importación Manual de Archivos Individuales
+
+Si los métodos anteriores no funcionan, puede importar cada archivo individualmente:
+
+1. Abra NinjaTrader 8
+2. Vaya a Herramientas (Tools) > Editar NinjaScript (Edit NinjaScript) > Editar... (Edit...)
+3. En el explorador de soluciones, haga clic derecho en 'Estrategias' (Strategies)
+4. Seleccione 'Importar...' (Import...)
+5. Navegue hasta la carpeta Source/Strategy y seleccione los archivos .cs
+6. Repita el proceso con los indicadores y otros archivos
+7. Compile la solución
+
 ## Configuración
 
 1. Copie los archivos de la carpeta `Config` a `[Directorio de NinjaTrader 8]/bin/Custom/MScalper/`
@@ -232,71 +244,43 @@ Para soporte adicional, contacte al desarrollador en jvlora@hublai.com.
 "@
 Set-Content -Path $installReadmePath -Value $installReadmeContent
 
-# Crear archivo XML para importación
+# Crear archivo XML para importación simplificado y más compatible con NinjaTrader 8
 $xmlPath = Join-Path -Path $sourceDir -ChildPath "MScalper.xml"
 $xmlContent = @"
 <?xml version="1.0" encoding="utf-8" ?>
-<NinjaTrader>
-  <AddOnDescriptor>
-    <MinimumRequiredVersion>$ntVersion</MinimumRequiredVersion>
-    <Author>Javier Lora</Author>
-    <DisplayName>MScalper - Order Flow Trading Strategy</DisplayName>
-    <Description>
-      MScalper es una estrategia algorítmica avanzada para NinjaTrader 8 que utiliza análisis de order flow para generar señales de trading en el micro-scalping de futuros (especialmente NQ y MNQ).
-    </Description>
-    <Version>$packageVersion</Version>
-    <Category>Strategy</Category>
-    <AddOnAssembly>
-      <Name>MScalper</Name>
-      <Files>
-        <File>
-          <Path>Indicators\MScalper\OrderFlowDeltaIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Indicators\MScalper\OrderBookImbalanceIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Indicators\MScalper\TimeAndSalesAnalyzerIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Strategies\MScalper\MScalperStrategy.cs</Path>
-          <Type>StrategySource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\AlgorithmCore.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\SignalProcessing.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\RiskManagement.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\MarketAnalysis.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\ConfigManager.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\Logger.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\LicenseManager.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-      </Files>
-    </AddOnAssembly>
-  </AddOnDescriptor>
-</NinjaTrader>
+<NinjaScript>
+  <MinimumRequiredVersion>$ntVersion</MinimumRequiredVersion>
+  <Indicators>
+    <Indicator>
+      <n>OrderFlow Delta</n>
+      <File>Indicators\OrderFlowDeltaIndicator.cs</File>
+    </Indicator>
+    <Indicator>
+      <n>OrderBook Imbalance</n>
+      <File>Indicators\OrderBookImbalanceIndicator.cs</File>
+    </Indicator>
+    <Indicator>
+      <n>Time &amp; Sales Analyzer</n>
+      <File>Indicators\TimeAndSalesAnalyzerIndicator.cs</File>
+    </Indicator>
+  </Indicators>
+  <Strategies>
+    <Strategy>
+      <n>MScalper</n>
+      <File>Strategy\MScalperStrategy.cs</File>
+    </Strategy>
+  </Strategies>
+  <AdditionalFiles>
+    <File>Core\AlgorithmCore.cs</File>
+    <File>Core\SignalProcessing.cs</File>
+    <File>Core\RiskManagement.cs</File>
+    <File>Core\MarketAnalysis.cs</File>
+    <File>Core\ConfigManager.cs</File>
+    <File>Core\Logger.cs</File>
+    <File>Core\LicenseManager.cs</File>
+    <File>Utilities\*.cs</File>
+  </AdditionalFiles>
+</NinjaScript>
 "@
 Set-Content -Path $xmlPath -Value $xmlContent
 
@@ -309,7 +293,7 @@ $versionXmlContent = @"
   <TargetNTVersion>$ntVersion</TargetNTVersion>
   <BuildDate>$(Get-Date -Format "yyyy-MM-dd HH:mm:ss")</BuildDate>
   <Package>
-    <Name>MScalper</Name>
+    <n>MScalper</n>
     <Description>MScalper Order Flow Trading Strategy</Description>
     <Author>Javier Lora</Author>
     <Contact>jvlora@hublai.com</Contact>

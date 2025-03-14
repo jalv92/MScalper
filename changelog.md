@@ -1,6 +1,13 @@
 # Changelog
 # MScalper - Changelog y Plan de Desarrollo
 
+## [0.8.4-beta] - 2025-03-14 10:30
+### Cambiado
+- Mejorada la compatibilidad del paquete de importación con NinjaTrader 8.1.4.1
+- Actualizada la estructura del archivo XML de importación para resolver problemas de compatibilidad
+- Simplificado el formato de archivos de importación para mejorar la compatibilidad entre versiones
+- Añadidas instrucciones adicionales de importación en la documentación
+
 ## [0.8.3-beta] - 2025-03-13 16:30
 ### Cambiado
 - Optimizado para compatibilidad con NinjaTrader 8.1.4.1

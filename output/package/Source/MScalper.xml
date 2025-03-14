@@ -1,62 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<NinjaTrader>
-  <AddOnDescriptor>
-    <MinimumRequiredVersion>8.1.4.1</MinimumRequiredVersion>
-    <Author>Javier Lora</Author>
-    <DisplayName>MScalper - Order Flow Trading Strategy</DisplayName>
-    <Description>
-      MScalper es una estrategia algorítmica avanzada para NinjaTrader 8 que utiliza análisis de order flow para generar señales de trading en el micro-scalping de futuros (especialmente NQ y MNQ).
-    </Description>
-    <Version>0.8.3-beta</Version>
-    <Category>Strategy</Category>
-    <AddOnAssembly>
-      <Name>MScalper</Name>
-      <Files>
-        <File>
-          <Path>Indicators\MScalper\OrderFlowDeltaIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Indicators\MScalper\OrderBookImbalanceIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Indicators\MScalper\TimeAndSalesAnalyzerIndicator.cs</Path>
-          <Type>IndicatorSource</Type>
-        </File>
-        <File>
-          <Path>Strategies\MScalper\MScalperStrategy.cs</Path>
-          <Type>StrategySource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\AlgorithmCore.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\SignalProcessing.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\RiskManagement.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\MarketAnalysis.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\ConfigManager.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\Logger.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-        <File>
-          <Path>Custom\MScalper\Core\LicenseManager.cs</Path>
-          <Type>CSharpSource</Type>
-        </File>
-      </Files>
-    </AddOnAssembly>
-  </AddOnDescriptor>
-</NinjaTrader>
+<NinjaScript>
+  <MinimumRequiredVersion>8.1.4.1</MinimumRequiredVersion>
+  <Indicators>
+    <Indicator>
+      <n>OrderFlow Delta</n>
+      <File>Indicators\OrderFlowDeltaIndicator.cs</File>
+    </Indicator>
+    <Indicator>
+      <n>OrderBook Imbalance</n>
+      <File>Indicators\OrderBookImbalanceIndicator.cs</File>
+    </Indicator>
+    <Indicator>
+      <n>Time &amp; Sales Analyzer</n>
+      <File>Indicators\TimeAndSalesAnalyzerIndicator.cs</File>
+    </Indicator>
+  </Indicators>
+  <Strategies>
+    <Strategy>
+      <n>MScalper</n>
+      <File>Strategy\MScalperStrategy.cs</File>
+    </Strategy>
+  </Strategies>
+  <AdditionalFiles>
+    <File>Core\AlgorithmCore.cs</File>
+    <File>Core\SignalProcessing.cs</File>
+    <File>Core\RiskManagement.cs</File>
+    <File>Core\MarketAnalysis.cs</File>
+    <File>Core\ConfigManager.cs</File>
+    <File>Core\Logger.cs</File>
+    <File>Core\LicenseManager.cs</File>
+    <File>Utilities\*.cs</File>
+  </AdditionalFiles>
+</NinjaScript>

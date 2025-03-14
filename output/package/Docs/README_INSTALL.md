@@ -27,6 +27,18 @@ Si el método anterior no funciona, puede importar los archivos manualmente:
 5. Navegue hasta la carpeta Source/[Categoría] correspondiente y seleccione los archivos .cs
 6. Compile la solución
 
+## Método 3: Importación Manual de Archivos Individuales
+
+Si los métodos anteriores no funcionan, puede importar cada archivo individualmente:
+
+1. Abra NinjaTrader 8
+2. Vaya a Herramientas (Tools) > Editar NinjaScript (Edit NinjaScript) > Editar... (Edit...)
+3. En el explorador de soluciones, haga clic derecho en 'Estrategias' (Strategies)
+4. Seleccione 'Importar...' (Import...)
+5. Navegue hasta la carpeta Source/Strategy y seleccione los archivos .cs
+6. Repita el proceso con los indicadores y otros archivos
+7. Compile la solución
+
 ## Configuración
 
 1. Copie los archivos de la carpeta Config a [Directorio de NinjaTrader 8]/bin/Custom/MScalper/

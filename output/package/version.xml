@@ -2,9 +2,9 @@
 <MScalper>
   <Version>0.8.3-beta</Version>
   <TargetNTVersion>8.1.4.1</TargetNTVersion>
-  <BuildDate>2025-03-13 22:28:40</BuildDate>
+  <BuildDate>2025-03-13 22:42:43</BuildDate>
   <Package>
-    <Name>MScalper</Name>
+    <n>MScalper</n>
     <Description>MScalper Order Flow Trading Strategy</Description>
     <Author>Javier Lora</Author>
     <Contact>jvlora@hublai.com</Contact>

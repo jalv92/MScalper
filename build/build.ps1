@@ -138,6 +138,18 @@ Este paquete está optimizado para NinjaTrader $ntVersion.
    * {Documentos}\NinjaTrader 8\bin\Custom\config\
 6. Reinicie NinjaTrader para completar la instalación
 
+## Método Alternativo de Importación
+
+Si el método anterior no funciona, puede importar cada archivo individualmente:
+
+1. Abra NinjaTrader 8
+2. Vaya a Herramientas (Tools) > Editar NinjaScript (Edit NinjaScript) > Editar... (Edit...)
+3. En el explorador de soluciones, haga clic derecho en 'Estrategias' (Strategies)
+4. Seleccione 'Importar...' (Import...)
+5. Navegue hasta la carpeta Source/Strategy y seleccione los archivos .cs
+6. Repita el proceso con los indicadores y otros archivos
+7. Compile la solución
+
 ## Configuración
 
 Consulte los archivos en la carpeta Docs para obtener información detallada sobre la configuración y uso.
@@ -156,7 +168,7 @@ Para soporte técnico, contacte a jvlora@hublai.com
 
 $installReadmeContent | Out-File -FilePath "$packageDir/Docs/README_INSTALL.md" -Encoding utf8
 
-# Crear archivo XML para importación en NinjaTrader
+# Crear archivo XML para importación en NinjaTrader (formato simplificado)
 $importXmlContent = @"
 <?xml version="1.0" encoding="utf-8"?>
 <NinjaScript>
@@ -181,6 +193,16 @@ $importXmlContent = @"
       <File>Strategy\MScalperStrategy.cs</File>
     </Strategy>
   </Strategies>
+  <AdditionalFiles>
+    <File>Core\AlgorithmCore.cs</File>
+    <File>Core\SignalProcessing.cs</File>
+    <File>Core\RiskManagement.cs</File>
+    <File>Core\MarketAnalysis.cs</File>
+    <File>Core\ConfigManager.cs</File>
+    <File>Core\Logger.cs</File>
+    <File>Core\LicenseManager.cs</File>
+    <File>Utilities\*.cs</File>
+  </AdditionalFiles>
 </NinjaScript>
 "@
 
@@ -199,7 +221,7 @@ $versionXmlContent = @"
 $versionXmlContent | Out-File -FilePath "$packageDir/version.xml" -Encoding utf8
 
 # Crear archivo ZIP
-$zipFile = "$outputDir/${projectName}_v${version}_NT${ntVersion}.zip"
+$zipFile = "$outputDir/${projectName}-$version.zip"
 Write-Host "Creando archivo ZIP: $zipFile" -ForegroundColor Cyan
 if (Test-Path $zipFile) {
     Remove-Item $zipFile -Force
