@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "parameters": {
+    "timeFrame": "1 Minute",
+    "volumeThreshold": 100,
+    "deltaThreshold": 50,
+    "imbalanceThreshold": 1.5,
+    "riskPercentage": 1.0,
+    "maxPositions": 1
+  }
+} 

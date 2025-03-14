@@ -1,0 +1,25 @@
+{
+  "profiles": [
+    {
+      "name": "Conservative",
+      "riskPercentage": 0.5,
+      "maxPositions": 1,
+      "stopLossMultiplier": 1.5,
+      "takeProfitMultiplier": 2.0
+    },
+    {
+      "name": "Moderate",
+      "riskPercentage": 1.0,
+      "maxPositions": 2,
+      "stopLossMultiplier": 1.0,
+      "takeProfitMultiplier": 1.5
+    },
+    {
+      "name": "Aggressive",
+      "riskPercentage": 2.0,
+      "maxPositions": 3,
+      "stopLossMultiplier": 0.8,
+      "takeProfitMultiplier": 1.2
+    }
+  ]
+} 
